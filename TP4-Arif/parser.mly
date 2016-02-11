@@ -147,7 +147,7 @@ simple_expr:
 | LPAREN expr RPAREN
 { $2 }
 	    
-| MINUS expr    %prec UMINUS
+| MINUS expr
 { mk_node (Eunop (Uminus, $2)) }
 		
 | expr PLUS expr
