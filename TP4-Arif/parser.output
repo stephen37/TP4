@@ -1,0 +1,1235 @@
+   0  $accept : %entry% $end
+
+   1  prog : instr_seq EOF
+
+   2  instr_seq :
+   3            | instr instr_seq
+
+   4  instr : expr EOI
+
+   5  expr : simple_expr
+   6       | PRINT_NEWLINE simple_expr
+   7       | PRINT_INT simple_expr
+
+   8  simple_expr : CONST_UNIT
+   9              | CONST_INT
+  10              | TRUE
+  11              | FALSE
+  12              | LPAREN expr RPAREN
+  13              | MINUS expr
+  14              | expr PLUS expr
+  15              | expr MINUS expr
+  16              | expr STAR expr
+  17              | expr SLASH expr
+  18              | NOT expr
+  19              | expr EQ expr
+  20              | expr NEQ expr
+  21              | expr LT expr
+  22              | expr LE expr
+  23              | expr GT expr
+  24              | expr GE expr
+  25              | expr AND expr
+  26              | expr OR expr
+  27              | IF expr THEN expr ELSE expr
+
+  28  %entry% : '\001' prog
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . prog  (28)
+	instr_seq : .  (2)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	EOF  reduce 2
+
+	prog  goto 13
+	instr_seq  goto 14
+	instr  goto 15
+	expr  goto 16
+	simple_expr  goto 17
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	simple_expr : CONST_INT .  (9)
+
+	.  reduce 9
+
+
+state 4
+	simple_expr : CONST_UNIT .  (8)
+
+	.  reduce 8
+
+
+state 5
+	simple_expr : LPAREN . expr RPAREN  (12)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 18
+	simple_expr  goto 17
+
+
+state 6
+	simple_expr : MINUS . expr  (13)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 19
+	simple_expr  goto 17
+
+
+state 7
+	expr : PRINT_INT . simple_expr  (7)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 20
+	simple_expr  goto 21
+
+
+state 8
+	expr : PRINT_NEWLINE . simple_expr  (6)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 20
+	simple_expr  goto 22
+
+
+state 9
+	simple_expr : IF . expr THEN expr ELSE expr  (27)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 23
+	simple_expr  goto 17
+
+
+state 10
+	simple_expr : NOT . expr  (18)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 24
+	simple_expr  goto 17
+
+
+state 11
+	simple_expr : TRUE .  (10)
+
+	.  reduce 10
+
+
+state 12
+	simple_expr : FALSE .  (11)
+
+	.  reduce 11
+
+
+state 13
+	%entry% : '\001' prog .  (28)
+
+	.  reduce 28
+
+
+state 14
+	prog : instr_seq . EOF  (1)
+
+	EOF  shift 25
+	.  error
+
+
+state 15
+	instr_seq : instr . instr_seq  (3)
+	instr_seq : .  (2)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	EOF  reduce 2
+
+	instr_seq  goto 26
+	instr  goto 15
+	expr  goto 16
+	simple_expr  goto 17
+
+
+state 16
+	instr : expr . EOI  (4)
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	EOI  shift 27
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	EQ  shift 32
+	NEQ  shift 33
+	LT  shift 34
+	LE  shift 35
+	GT  shift 36
+	GE  shift 37
+	AND  shift 38
+	OR  shift 39
+	.  error
+
+
+state 17
+	expr : simple_expr .  (5)
+
+	.  reduce 5
+
+
+state 18
+	simple_expr : LPAREN expr . RPAREN  (12)
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	RPAREN  shift 40
+	SLASH  shift 30
+	STAR  shift 31
+	EQ  shift 32
+	NEQ  shift 33
+	LT  shift 34
+	LE  shift 35
+	GT  shift 36
+	GE  shift 37
+	AND  shift 38
+	OR  shift 39
+	.  error
+
+
+state 19
+	simple_expr : MINUS expr .  (13)
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	EOI  reduce 13
+	RPAREN  reduce 13
+	THEN  reduce 13
+	ELSE  reduce 13
+	EQ  reduce 13
+	NEQ  reduce 13
+	LT  reduce 13
+	LE  reduce 13
+	GT  reduce 13
+	GE  reduce 13
+	AND  reduce 13
+	OR  reduce 13
+
+
+state 20
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	EQ  shift 32
+	NEQ  shift 33
+	LT  shift 34
+	LE  shift 35
+	GT  shift 36
+	GE  shift 37
+	AND  shift 38
+	OR  shift 39
+	.  error
+
+
+21: reduce/reduce conflict (reduce 5, reduce 7) on MINUS
+21: reduce/reduce conflict (reduce 5, reduce 7) on PLUS
+21: reduce/reduce conflict (reduce 5, reduce 7) on SLASH
+21: reduce/reduce conflict (reduce 5, reduce 7) on STAR
+21: reduce/reduce conflict (reduce 5, reduce 7) on EQ
+21: reduce/reduce conflict (reduce 5, reduce 7) on NEQ
+21: reduce/reduce conflict (reduce 5, reduce 7) on LT
+21: reduce/reduce conflict (reduce 5, reduce 7) on LE
+21: reduce/reduce conflict (reduce 5, reduce 7) on GT
+21: reduce/reduce conflict (reduce 5, reduce 7) on GE
+21: reduce/reduce conflict (reduce 5, reduce 7) on AND
+21: reduce/reduce conflict (reduce 5, reduce 7) on OR
+state 21
+	expr : simple_expr .  (5)
+	expr : PRINT_INT simple_expr .  (7)
+
+	EOI  reduce 7
+	MINUS  reduce 5
+	PLUS  reduce 5
+	RPAREN  reduce 7
+	SLASH  reduce 5
+	STAR  reduce 5
+	THEN  reduce 7
+	ELSE  reduce 7
+	EQ  reduce 5
+	NEQ  reduce 5
+	LT  reduce 5
+	LE  reduce 5
+	GT  reduce 5
+	GE  reduce 5
+	AND  reduce 5
+	OR  reduce 5
+
+
+22: reduce/reduce conflict (reduce 5, reduce 6) on MINUS
+22: reduce/reduce conflict (reduce 5, reduce 6) on PLUS
+22: reduce/reduce conflict (reduce 5, reduce 6) on SLASH
+22: reduce/reduce conflict (reduce 5, reduce 6) on STAR
+22: reduce/reduce conflict (reduce 5, reduce 6) on EQ
+22: reduce/reduce conflict (reduce 5, reduce 6) on NEQ
+22: reduce/reduce conflict (reduce 5, reduce 6) on LT
+22: reduce/reduce conflict (reduce 5, reduce 6) on LE
+22: reduce/reduce conflict (reduce 5, reduce 6) on GT
+22: reduce/reduce conflict (reduce 5, reduce 6) on GE
+22: reduce/reduce conflict (reduce 5, reduce 6) on AND
+22: reduce/reduce conflict (reduce 5, reduce 6) on OR
+state 22
+	expr : simple_expr .  (5)
+	expr : PRINT_NEWLINE simple_expr .  (6)
+
+	EOI  reduce 6
+	MINUS  reduce 5
+	PLUS  reduce 5
+	RPAREN  reduce 6
+	SLASH  reduce 5
+	STAR  reduce 5
+	THEN  reduce 6
+	ELSE  reduce 6
+	EQ  reduce 5
+	NEQ  reduce 5
+	LT  reduce 5
+	LE  reduce 5
+	GT  reduce 5
+	GE  reduce 5
+	AND  reduce 5
+	OR  reduce 5
+
+
+state 23
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+	simple_expr : IF expr . THEN expr ELSE expr  (27)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	THEN  shift 41
+	EQ  shift 32
+	NEQ  shift 33
+	LT  shift 34
+	LE  shift 35
+	GT  shift 36
+	GE  shift 37
+	AND  shift 38
+	OR  shift 39
+	.  error
+
+
+state 24
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : NOT expr .  (18)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	EOI  reduce 18
+	RPAREN  reduce 18
+	THEN  reduce 18
+	ELSE  reduce 18
+	EQ  reduce 18
+	NEQ  reduce 18
+	LT  reduce 18
+	LE  reduce 18
+	GT  reduce 18
+	GE  reduce 18
+	AND  reduce 18
+	OR  reduce 18
+
+
+state 25
+	prog : instr_seq EOF .  (1)
+
+	.  reduce 1
+
+
+state 26
+	instr_seq : instr instr_seq .  (3)
+
+	.  reduce 3
+
+
+state 27
+	instr : expr EOI .  (4)
+
+	.  reduce 4
+
+
+state 28
+	simple_expr : expr MINUS . expr  (15)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 42
+	simple_expr  goto 17
+
+
+state 29
+	simple_expr : expr PLUS . expr  (14)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 43
+	simple_expr  goto 17
+
+
+state 30
+	simple_expr : expr SLASH . expr  (17)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 44
+	simple_expr  goto 17
+
+
+state 31
+	simple_expr : expr STAR . expr  (16)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 45
+	simple_expr  goto 17
+
+
+state 32
+	simple_expr : expr EQ . expr  (19)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 46
+	simple_expr  goto 17
+
+
+state 33
+	simple_expr : expr NEQ . expr  (20)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 47
+	simple_expr  goto 17
+
+
+state 34
+	simple_expr : expr LT . expr  (21)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 48
+	simple_expr  goto 17
+
+
+state 35
+	simple_expr : expr LE . expr  (22)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 49
+	simple_expr  goto 17
+
+
+state 36
+	simple_expr : expr GT . expr  (23)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 50
+	simple_expr  goto 17
+
+
+state 37
+	simple_expr : expr GE . expr  (24)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 51
+	simple_expr  goto 17
+
+
+state 38
+	simple_expr : expr AND . expr  (25)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 52
+	simple_expr  goto 17
+
+
+state 39
+	simple_expr : expr OR . expr  (26)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 53
+	simple_expr  goto 17
+
+
+state 40
+	simple_expr : LPAREN expr RPAREN .  (12)
+
+	.  reduce 12
+
+
+state 41
+	simple_expr : IF expr THEN . expr ELSE expr  (27)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 54
+	simple_expr  goto 17
+
+
+state 42
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr MINUS expr .  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	SLASH  shift 30
+	STAR  shift 31
+	EOI  reduce 15
+	MINUS  reduce 15
+	PLUS  reduce 15
+	RPAREN  reduce 15
+	THEN  reduce 15
+	ELSE  reduce 15
+	EQ  reduce 15
+	NEQ  reduce 15
+	LT  reduce 15
+	LE  reduce 15
+	GT  reduce 15
+	GE  reduce 15
+	AND  reduce 15
+	OR  reduce 15
+
+
+state 43
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr PLUS expr .  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	SLASH  shift 30
+	STAR  shift 31
+	EOI  reduce 14
+	MINUS  reduce 14
+	PLUS  reduce 14
+	RPAREN  reduce 14
+	THEN  reduce 14
+	ELSE  reduce 14
+	EQ  reduce 14
+	NEQ  reduce 14
+	LT  reduce 14
+	LE  reduce 14
+	GT  reduce 14
+	GE  reduce 14
+	AND  reduce 14
+	OR  reduce 14
+
+
+state 44
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr SLASH expr .  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	.  reduce 17
+
+
+state 45
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr STAR expr .  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	.  reduce 16
+
+
+state 46
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr EQ expr .  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	LT  shift 34
+	LE  shift 35
+	GT  shift 36
+	GE  shift 37
+	EOI  reduce 19
+	RPAREN  reduce 19
+	THEN  reduce 19
+	ELSE  reduce 19
+	EQ  reduce 19
+	NEQ  reduce 19
+	AND  reduce 19
+	OR  reduce 19
+
+
+state 47
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr NEQ expr .  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	LT  shift 34
+	LE  shift 35
+	GT  shift 36
+	GE  shift 37
+	EOI  reduce 20
+	RPAREN  reduce 20
+	THEN  reduce 20
+	ELSE  reduce 20
+	EQ  reduce 20
+	NEQ  reduce 20
+	AND  reduce 20
+	OR  reduce 20
+
+
+state 48
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr LT expr .  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	EOI  reduce 21
+	RPAREN  reduce 21
+	THEN  reduce 21
+	ELSE  reduce 21
+	EQ  reduce 21
+	NEQ  reduce 21
+	LT  reduce 21
+	LE  reduce 21
+	GT  reduce 21
+	GE  reduce 21
+	AND  reduce 21
+	OR  reduce 21
+
+
+state 49
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr LE expr .  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	EOI  reduce 22
+	RPAREN  reduce 22
+	THEN  reduce 22
+	ELSE  reduce 22
+	EQ  reduce 22
+	NEQ  reduce 22
+	LT  reduce 22
+	LE  reduce 22
+	GT  reduce 22
+	GE  reduce 22
+	AND  reduce 22
+	OR  reduce 22
+
+
+state 50
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr GT expr .  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	EOI  reduce 23
+	RPAREN  reduce 23
+	THEN  reduce 23
+	ELSE  reduce 23
+	EQ  reduce 23
+	NEQ  reduce 23
+	LT  reduce 23
+	LE  reduce 23
+	GT  reduce 23
+	GE  reduce 23
+	AND  reduce 23
+	OR  reduce 23
+
+
+state 51
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr GE expr .  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	EOI  reduce 24
+	RPAREN  reduce 24
+	THEN  reduce 24
+	ELSE  reduce 24
+	EQ  reduce 24
+	NEQ  reduce 24
+	LT  reduce 24
+	LE  reduce 24
+	GT  reduce 24
+	GE  reduce 24
+	AND  reduce 24
+	OR  reduce 24
+
+
+state 52
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr AND expr .  (25)
+	simple_expr : expr . OR expr  (26)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	EQ  shift 32
+	NEQ  shift 33
+	LT  shift 34
+	LE  shift 35
+	GT  shift 36
+	GE  shift 37
+	EOI  reduce 25
+	RPAREN  reduce 25
+	THEN  reduce 25
+	ELSE  reduce 25
+	AND  reduce 25
+	OR  reduce 25
+
+
+state 53
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+	simple_expr : expr OR expr .  (26)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	EQ  shift 32
+	NEQ  shift 33
+	LT  shift 34
+	LE  shift 35
+	GT  shift 36
+	GE  shift 37
+	EOI  reduce 26
+	RPAREN  reduce 26
+	THEN  reduce 26
+	ELSE  reduce 26
+	AND  reduce 26
+	OR  reduce 26
+
+
+state 54
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+	simple_expr : IF expr THEN expr . ELSE expr  (27)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	ELSE  shift 55
+	EQ  shift 32
+	NEQ  shift 33
+	LT  shift 34
+	LE  shift 35
+	GT  shift 36
+	GE  shift 37
+	AND  shift 38
+	OR  shift 39
+	.  error
+
+
+state 55
+	simple_expr : IF expr THEN expr ELSE . expr  (27)
+
+	CONST_INT  shift 3
+	CONST_UNIT  shift 4
+	LPAREN  shift 5
+	MINUS  shift 6
+	PRINT_INT  shift 7
+	PRINT_NEWLINE  shift 8
+	IF  shift 9
+	NOT  shift 10
+	TRUE  shift 11
+	FALSE  shift 12
+	.  error
+
+	expr  goto 56
+	simple_expr  goto 17
+
+
+state 56
+	simple_expr : expr . PLUS expr  (14)
+	simple_expr : expr . MINUS expr  (15)
+	simple_expr : expr . STAR expr  (16)
+	simple_expr : expr . SLASH expr  (17)
+	simple_expr : expr . EQ expr  (19)
+	simple_expr : expr . NEQ expr  (20)
+	simple_expr : expr . LT expr  (21)
+	simple_expr : expr . LE expr  (22)
+	simple_expr : expr . GT expr  (23)
+	simple_expr : expr . GE expr  (24)
+	simple_expr : expr . AND expr  (25)
+	simple_expr : expr . OR expr  (26)
+	simple_expr : IF expr THEN expr ELSE expr .  (27)
+
+	MINUS  shift 28
+	PLUS  shift 29
+	SLASH  shift 30
+	STAR  shift 31
+	EQ  shift 32
+	NEQ  shift 33
+	LT  shift 34
+	LE  shift 35
+	GT  shift 36
+	GE  shift 37
+	AND  shift 38
+	OR  shift 39
+	EOI  reduce 27
+	RPAREN  reduce 27
+	THEN  reduce 27
+	ELSE  reduce 27
+
+
+State 21 contains 12 reduce/reduce conflicts.
+State 22 contains 12 reduce/reduce conflicts.
+
+
+31 terminals, 7 nonterminals
+29 grammar rules, 57 states
