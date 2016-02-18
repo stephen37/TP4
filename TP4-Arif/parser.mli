@@ -27,6 +27,9 @@ type token =
   | UMINUS
   | TRUE
   | FALSE
+  | LET
+  | IN
+  | AFFECT
 
 val prog :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Ast.prog

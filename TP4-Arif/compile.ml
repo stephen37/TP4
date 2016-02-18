@@ -16,6 +16,16 @@ let new_label =
   let c = ref 0 in
   fun () -> incr c; sprintf "__label__%05i" !c
 
+module Env = Map.Make(String)
+
+type var_loc =
+| Global_var of int
+| Local_var  of int
+
+type venv = var_loc Env.t
+
+
+    
 (* Les fonctions [push], [peek] et [pop] sont là pour vous aider à manipuler
    la pile. *)
   
@@ -42,7 +52,7 @@ let pop reg =
     
 (* La fonction de compilation des expressions prend en argument :
    l'expression à compiler. *)
-let rec compile_expr e =
+let rec compile_expr env e =
   match e.expr with
 
     | Econst c -> begin
@@ -63,14 +73,14 @@ let rec compile_expr e =
     | Eunop (op, e) -> begin
       match op with
       | Uminus ->
-	let exp = compile_expr e in
+	let exp = compile_expr env e in
 	exp
 	@@ pop a0
 	@@ sub a0 zero oreg a0
 	@@ push a0
 
       | Unot ->
-	let exp = compile_expr e in
+	let exp = compile_expr env e in
 	let labelNot = new_label() in
 	let labelFin = new_label() in
 	exp
@@ -92,8 +102,8 @@ let rec compile_expr e =
     | Ebinop (op, e1, e2) -> begin
       match op with
       | Badd ->
-	let exp1 = compile_expr e1 in
-	let exp2 = compile_expr e2 in
+	let exp1 = compile_expr env e1 in
+	let exp2 = compile_expr env e2 in
         exp1
 	@@ exp2
 	@@ pop a1
@@ -101,8 +111,8 @@ let rec compile_expr e =
 	@@ add a0 a0 oreg a1
 	@@ push a0
       | Bsub ->
-	let exp1 = compile_expr e1 in
-	let exp2 = compile_expr e2 in
+	let exp1 = compile_expr env e1 in
+	let exp2 = compile_expr env e2 in
 	exp1
 	@@ exp2
 	@@ pop a1
@@ -110,8 +120,8 @@ let rec compile_expr e =
 	@@ sub a0 a0 oreg a1
 	@@ push a0
       | Bmul ->
-	let exp1 = compile_expr e1 in
-	let exp2 = compile_expr e2 in
+	let exp1 = compile_expr env e1 in
+	let exp2 = compile_expr env e2 in
 	exp1
 	@@ exp2
 	@@ pop a1
@@ -119,8 +129,8 @@ let rec compile_expr e =
 	@@ mul a0 a0 oreg a1
 	@@ push a0
       | Bdiv ->
-	let exp1 = compile_expr e1 in
-	let exp2 = compile_expr e2 in
+	let exp1 = compile_expr env e1 in
+	let exp2 = compile_expr env e2 in
 	exp1
 	@@ exp2
 	@@ pop a1
@@ -129,8 +139,8 @@ let rec compile_expr e =
 	@@ push a0
 
       | Beq ->
-	let exp1 = compile_expr e1 in
-	let exp2 = compile_expr e2 in
+	let exp1 = compile_expr env e1 in
+	let exp2 = compile_expr env e2 in
 	exp1
 	@@ exp2
 	@@ pop a1
@@ -138,8 +148,8 @@ let rec compile_expr e =
 	@@ seq a0 a0 a1
 	@@ push a0
       | Bneq ->
-	let exp1 = compile_expr e1 in
-	let exp2 = compile_expr e2 in
+	let exp1 = compile_expr env e1 in
+	let exp2 = compile_expr env e2 in
 	exp1
 	@@ exp2
 	@@ pop a1
@@ -147,8 +157,8 @@ let rec compile_expr e =
 	@@ sne a0 a0 a1
 	@@ push a0
       | Blt ->
-	let exp1 = compile_expr e1 in
-	let exp2 = compile_expr e2 in
+	let exp1 = compile_expr env e1 in
+	let exp2 = compile_expr env e2 in
 	exp1
 	@@ exp2
 	@@ pop a1
@@ -156,8 +166,8 @@ let rec compile_expr e =
 	@@ slt a0 a0 a1
 	@@ push a0
       | Ble ->
-	let exp1 = compile_expr e1 in
-	let exp2 = compile_expr e2 in
+	let exp1 = compile_expr env e1 in
+	let exp2 = compile_expr env e2 in
 	exp1
 	@@ exp2
 	@@ pop a1
@@ -165,8 +175,8 @@ let rec compile_expr e =
 	@@ sle a0 a0 a1
 	@@ push a0
       | Bgt ->
-	let exp1 = compile_expr e1 in
-	let exp2 = compile_expr e2 in
+	let exp1 = compile_expr env e1 in
+	let exp2 = compile_expr env e2 in
 	exp1
 	@@ exp2
 	@@ pop a1
@@ -174,8 +184,8 @@ let rec compile_expr e =
 	@@ sgt a0 a0 a1
 	@@ push a0
       | Bge ->
-	let exp1 = compile_expr e1 in
-	let exp2 = compile_expr e2 in
+	let exp1 = compile_expr env e1 in
+	let exp2 = compile_expr env e2 in
 	exp1
 	@@ exp2
 	@@ pop a1
@@ -183,8 +193,8 @@ let rec compile_expr e =
 	@@ sge a0 a0 a1
 	@@ push a0
       | Band ->
-	let exp1 = compile_expr e1 in
-	let exp2 = compile_expr e2 in
+	let exp1 = compile_expr env e1 in
+	let exp2 = compile_expr env e2 in
 	exp1
 	@@ exp2
 	@@ pop a1
@@ -192,8 +202,8 @@ let rec compile_expr e =
 	@@ and_ a0 a0 a1
 	@@ push a0
       | Bor ->
-	let exp1 = compile_expr e1 in
-	let exp2 = compile_expr e2 in
+	let exp1 = compile_expr env e1 in
+	let exp2 = compile_expr env e2 in
 	exp1
 	@@ exp2
 	@@ pop a1
@@ -205,9 +215,9 @@ let rec compile_expr e =
     end
 
     | Eif (eIf, eThen, eElse) -> begin
-      let exp1 = compile_expr eIf in
-      let exp2 = compile_expr eThen in
-      let exp3 = compile_expr eElse in
+      let exp1 = compile_expr env eIf in
+      let exp2 = compile_expr env eThen in
+      let exp3 = compile_expr env eElse in
       let labelTrue = new_label() in
       let labelFin = new_label() in
       exp1
@@ -224,17 +234,32 @@ let rec compile_expr e =
 	
     end
       
+    | Eident i -> begin
+      let pos =
+	try 
+	  Env.find i env
+	with
+	| Not_found -> failwith "Ident not found"
+      in
+      match pos with
+      | Global_var g -> lw a0 areg (g, gp) @@ push a0
+      | Local_var  l -> not_implemented()
+    end
+      
+  
+      
+      
       
     (* Pour l'affichage, on calcul la valeur de l'argument, puis on saute au
        fragment de code gérant l'affichage proprement dit. *)
     | Eprint_newline e ->
-      let e_code = compile_expr e in
+      let e_code = compile_expr env e in
       e_code
       @@ jal "print_newline"
 	
     (* À compléter avec les autres formes d'expressions. *)
     | Eprint_int e ->
-      let e_code = compile_expr e in
+      let e_code = compile_expr env e in
       e_code
       @@ jal "print_int"
 
@@ -244,14 +269,23 @@ let rec compile_expr e =
 
       
 (* Les instructions sont calculées l'une après l'autre. *)
-let rec compile_instr_list il =
+let rec compile_instr_list env il nxt_global =
   match il with
     | []       -> nop
 
     (* À compléter pour le cas [Icompute] et l'itération. *)
-    |  e::r -> match e with
-      | Icompute a -> (compile_expr a) @@ (compile_instr_list r)
-      
+    |  i::r -> match i with
+      | Icompute e     -> (compile_expr env e) @@ (compile_instr_list env r nxt_global)
+      | Ilet (id, exp) ->
+	let exprExp = compile_expr env exp in
+	let newEnv = Env.add id (Global_var(nxt_global)) env in
+	let suite = compile_instr_list newEnv r (nxt_global + 1) in
+	exprExp
+	@@ pop t0
+	@@ sw t0 areg (4 * nxt_global, gp)
+	@@ suite
+       
+	
     | _ -> not_implemented()
 
 
@@ -285,7 +319,7 @@ let built_ins () =
    3/ Le code des fonctions d'affichage (built_ins_code)
 *)
 let compile_prog p =
-  let main_code = compile_instr_list p in
+  let main_code = compile_instr_list Env.empty p 0 in
   let built_ins_code = built_ins () in
   
   { text =

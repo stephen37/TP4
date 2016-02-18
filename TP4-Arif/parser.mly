@@ -22,6 +22,7 @@
 %token EOI
 %token <string> IDENT
 
+
 %token LPAREN
 %token MINUS
 %token PLUS
@@ -50,6 +51,12 @@
 %token TRUE
 %token FALSE
 
+%token LET
+%token IN
+%token AFFECT
+
+
+
 
 
 /* Associativités et priorités. */
@@ -61,6 +68,7 @@
 %right UMINUS NOT
 %left PLUS MINUS
 %left SLASH STAR
+
 
 
 
@@ -98,6 +106,8 @@ instr_seq:
 instr:
 | expr EOI
     { Icompute $1 }
+| LET IDENT AFFECT expr EOI
+    { Ilet ($2, $4) }
 ;
 
 
@@ -192,6 +202,12 @@ simple_expr:
    
 | IF expr THEN expr ELSE expr
     { mk_node (Eif ($2, $4, $6)) }
- 				
+
+| IDENT
+    { mk_node (Eident $1) }
+
+| LET IDENT AFFECT expr IN expr
+    { mk_node (Eletin ($2, $4, $6)) }
+	
 ;
 

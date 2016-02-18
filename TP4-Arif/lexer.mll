@@ -10,9 +10,33 @@
     lexeme_start_p b,
     lexeme_end_p b
 
+  let keyword pos =
+    let h = Hashtbl.create 17 in
+    List.iter (fun (s,k) -> Hashtbl.add h s k)
+      [
+      (* Arith *)
+	"print_int",    PRINT_INT;
+	"print_newline", PRINT_NEWLINE;
+      (* Bool *)
+	"true",        TRUE;
+	"false",       FALSE;
+	"not",         NOT;
+	"if",          IF;
+	"then",        THEN;
+	"else",        ELSE;
+      ];
+    fun s ->
+      try Hashtbl.find h s
+      with Not_found -> IDENT s
+
+  let comment_cpt = ref 0
+
+      
 }
 
-
+let digit = ['0'-'9']
+let alpha = ['a'-'z' 'A'-'Z']
+let ident = ['a'-'z' '_'] (alpha | '_' | '\'' | digit)*
 
 rule token = parse
   (* Le retour à la ligne est traité à part pour aider la localisation. *)
@@ -81,6 +105,15 @@ rule token = parse
       { AND }
   | "||"
       { OR }
+
+  | "let"
+      { LET }
+  | "in"
+      { IN }
+  | "="
+      { AFFECT }
+  | ident
+      { keyword (current_pos lexbuf) (lexeme lexbuf) }
       
   (* À compléter. Il faut gérer :
      x les blancs
